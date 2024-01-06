@@ -1,10 +1,10 @@
-package io.github.mmarco94.klibportal
-
+import io.github.mmarco94.klibportal.PortalOperationCancelledException
 import io.github.mmarco94.klibportal.portals.openFile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
+import kotlin.io.path.exists
 
 
 fun main() {
@@ -20,12 +20,12 @@ fun main() {
 
 private suspend fun example(conn: DBusConnection) {
     try {
-        println(
-            openFile(
-                conn,
-                title = "Choose file",
-            )
+        val files = openFile(
+            conn,
+            title = "Choose file",
         )
+        println(files)
+        require(files.all { it.exists() })
     } catch (e: PortalOperationCancelledException) {
         println(e.message)
     }

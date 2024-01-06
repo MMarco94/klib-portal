@@ -9,6 +9,7 @@ import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.interfaces.DBusInterface
 import org.freedesktop.dbus.types.UInt32
 import org.freedesktop.dbus.types.Variant
+import java.nio.file.Path
 
 @DBusProperty(name = "version", type = UInt32::class, access = DBusProperty.Access.READ)
 @DBusInterfaceName("org.freedesktop.portal.FileChooser")
@@ -27,8 +28,7 @@ suspend fun openFile(
     multiple: Boolean = false,
     directory: Boolean = false,
     // TODO filters, current_filter, choices, current_folder
-
-): List<String> {
+): List<Path> {
     return portalWorkflow(
         conn,
         remoteObjectType = FileChooser::class.java,
@@ -47,8 +47,9 @@ suspend fun openFile(
                 }.toMutableMap()
             )
         },
-        parseResponse = {
-            it.getValue("uris").value as List<String>
+        parseResponse = { response ->
+            (response.getValue("uris").value as List<String>)
+                .map { Path.of(it.removePrefix("file://")) }
         },
     )
 }
