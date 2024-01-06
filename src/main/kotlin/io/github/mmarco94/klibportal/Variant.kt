@@ -9,6 +9,12 @@ fun String.variant(): Variant<String> {
     return Variant(this)
 }
 
+fun String.byteArrayVariant(): Variant<ByteArray> {
+    return Variant(toCByteArray())
+}
+
+private fun String.toCByteArray() = toByteArray() + byteArrayOf(0)
+
 fun Boolean.variant(): Variant<Boolean> {
     return Variant(this)
 }
@@ -20,7 +26,7 @@ fun Map<String, Variant<*>>.variant() = Variant(
 
 
 @JvmName("listVariant")
-fun List<ByteArray>.variant(): Variant<List<ByteArray>> = Variant(
-    this,
+fun List<String>.byteArrayVariant(): Variant<List<ByteArray>> = Variant(
+    map { it.toCByteArray() },
     DBusListType(ByteArray::class.java)
 )

@@ -1,5 +1,6 @@
 package io.github.mmarco94.klibportal.portals
 
+import io.github.mmarco94.klibportal.byteArrayVariant
 import io.github.mmarco94.klibportal.portalWorkflow
 import io.github.mmarco94.klibportal.variant
 import org.freedesktop.dbus.DBusPath
@@ -29,7 +30,7 @@ suspend fun openFile(
     modal: Boolean = true,
     multiple: Boolean = false,
     directory: Boolean = false,
-    // TODO filters, current_filter, choices, current_folder
+    // TODO filters, current_filter, choices
 ): List<Path> {
     return portalWorkflow(
         conn,
@@ -63,7 +64,8 @@ suspend fun saveFile(
     acceptLabel: String? = null,
     modal: Boolean = true,
     currentName: String? = null,
-    // TODO filters, current_filter, choices, current_folder, current_file
+    currentFolder: Path? = null,
+    // TODO filters, current_filter, choices, current_file
 ): List<Path> {
     return portalWorkflow(
         conn,
@@ -80,6 +82,9 @@ suspend fun saveFile(
                     put("modal", modal.variant())
                     if (currentName != null) {
                         put("current_name", currentName.variant())
+                    }
+                    if (currentFolder != null) {
+                        put("current_folder", currentFolder.toString().byteArrayVariant())
                     }
                 }.toMutableMap()
             )
@@ -98,7 +103,8 @@ suspend fun saveFiles(
     files: List<String>,
     acceptLabel: String? = null,
     modal: Boolean = true,
-    // TODO choices, current_folder
+    currentFolder: Path? = null,
+    // TODO choices
 ): List<Path> {
     return portalWorkflow(
         conn,
@@ -113,7 +119,10 @@ suspend fun saveFiles(
                         put("accept_label", acceptLabel.variant())
                     }
                     put("modal", modal.variant())
-                    put("files", files.map { it.toByteArray() }.variant())
+                    put("files", files.byteArrayVariant())
+                    if (currentFolder != null) {
+                        put("current_folder", currentFolder.toString().byteArrayVariant())
+                    }
                 }.toMutableMap()
             )
         },
