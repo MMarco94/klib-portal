@@ -48,7 +48,7 @@ suspend fun openFile(
             )
         },
         parseResponse = { response ->
-            // TODO: should this be a single file, depending on multiple?
+            // TODO: should this be a single file, depending on `multiple`?
             (response.getValue("uris").value as List<String>)
                 .map { Path.of(it.removePrefix("file://")) }
         },
