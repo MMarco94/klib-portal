@@ -22,7 +22,7 @@ private suspend fun example(conn: DBusConnection) {
     try {
         val files = openFile(
             conn,
-            title = "Choose file",
+            title = "Open",
         )
         println(files)
         require(files.all { it.exists() })

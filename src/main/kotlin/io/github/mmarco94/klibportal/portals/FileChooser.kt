@@ -48,6 +48,74 @@ suspend fun openFile(
             )
         },
         parseResponse = { response ->
+            // TODO: should this be a single file, depending on multiple?
+            (response.getValue("uris").value as List<String>)
+                .map { Path.of(it.removePrefix("file://")) }
+        },
+    )
+}
+
+suspend fun saveFile(
+    conn: DBusConnection,
+    title: String,
+    acceptLabel: String? = null,
+    modal: Boolean = true,
+    currentName: String? = null,
+    // TODO filters, current_filter, choices, current_folder, current_file
+): List<Path> {
+    return portalWorkflow(
+        conn,
+        remoteObjectType = FileChooser::class.java,
+        remoteCall = { obj, token ->
+            obj.SaveFile(
+                "",
+                title,
+                buildMap {
+                    put("handle_token", token)
+                    if (acceptLabel != null) {
+                        put("accept_label", acceptLabel.variant())
+                    }
+                    put("modal", modal.variant())
+                    if (currentName != null) {
+                        put("current_name", currentName.variant())
+                    }
+                }.toMutableMap()
+            )
+        },
+        parseResponse = { response ->
+            // TODO: should this be a single file?
+            (response.getValue("uris").value as List<String>)
+                .map { Path.of(it.removePrefix("file://")) }
+        },
+    )
+}
+
+suspend fun saveFiles(
+    conn: DBusConnection,
+    title: String,
+    files: List<String>,
+    acceptLabel: String? = null,
+    modal: Boolean = true,
+    // TODO choices, current_folder
+): List<Path> {
+    return portalWorkflow(
+        conn,
+        remoteObjectType = FileChooser::class.java,
+        remoteCall = { obj, token ->
+            obj.SaveFiles(
+                "",
+                title,
+                buildMap {
+                    put("handle_token", token)
+                    if (acceptLabel != null) {
+                        put("accept_label", acceptLabel.variant())
+                    }
+                    put("modal", modal.variant())
+                    put("files", files.map { it.toByteArray() }.variant())
+                }.toMutableMap()
+            )
+        },
+        parseResponse = { response ->
             (response.getValue("uris").value as List<String>)
                 .map { Path.of(it.removePrefix("file://")) }
         },

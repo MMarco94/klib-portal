@@ -18,8 +18,9 @@ fun Map<String, Variant<*>>.variant() = Variant(
     DBusMapType(String::class.java, Variant::class.java)
 )
 
+
 @JvmName("listVariant")
-fun List<String>.variant(): Variant<Any?> = Variant(
+fun List<ByteArray>.variant(): Variant<List<ByteArray>> = Variant(
     this,
-    DBusListType(String::class.java)
+    DBusListType(ByteArray::class.java)
 )
