@@ -14,6 +14,8 @@ import java.nio.file.Path
 @DBusProperty(name = "version", type = UInt32::class, access = DBusProperty.Access.READ)
 @DBusInterfaceName("org.freedesktop.portal.FileChooser")
 interface FileChooser : DBusInterface {
+
+    // MutableMap because of https://github.com/hypfvieh/dbus-java/issues/233
     fun OpenFile(parentWindow: String, title: String, options: MutableMap<String, Variant<*>>): DBusPath
     fun SaveFile(parentWindow: String, title: String, options: MutableMap<String, Variant<*>>): DBusPath
     fun SaveFiles(parentWindow: String, title: String, options: MutableMap<String, Variant<*>>): DBusPath
